@@ -31,6 +31,7 @@ function App() {
   const [notes, setNotes] = React.useState([]);
   const [connected, setConnected] = React.useState(false);
   const [user, setUser] = React.useState(null);
+  const [register, setRegister] = React.useState(false);
 
   //we need to create ref for the input
   const inputTitle = React.createRef();
@@ -76,6 +77,8 @@ function App() {
     if (!title && !content) {
       return;
     }
+
+    
 
     //Saving the note in the database
     NoteDataService.createNote(user, title, content);
@@ -123,6 +126,24 @@ function App() {
       });
   }
 
+  function registerUser() {
+    const username = inputUsername.current.value;
+    const password = inputPassword.current.value;
+    const confirmpassword = inputPassword.current.value;
+
+    //check if there are empty fields
+    if (!username || !password || !confirmpassword) {
+      alert('Please fill all the fields');
+      return;
+    }
+
+    if (password !== confirmpassword) {
+      alert('Password does not match');
+      return;
+    }
+    UsersDataService.registerUser(username, password)
+  }
+
   function disconnect() {
     setConnected(false);
     setUser(null);
@@ -131,18 +152,27 @@ function App() {
     setNotes([]);
   }
 
+  /*
+  * Modal for Note
+  */
   const {
     isOpen: isNoteOpen,
     onOpen: onNoteOpen,
     onClose: onNoteClose,
   } = useDisclosure();
 
+  /*
+  * Modal for login
+  */
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
     onClose: onLoginClose,
   } = useDisclosure();
 
+  /*
+  * Ref for Modal
+  */
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
 
@@ -199,8 +229,15 @@ function App() {
           onClose={onLoginClose}
         >
           <ModalOverlay />
+          
           <ModalContent>
-            <ModalHeader>Login</ModalHeader>
+            {
+              !register ? (
+                <ModalHeader>Login</ModalHeader>
+              ) : (
+                <ModalHeader>Register</ModalHeader>
+              )
+            }
             <ModalCloseButton />
             <ModalBody pb={6}>
               <FormControl>
@@ -220,16 +257,57 @@ function App() {
                   ref={inputPassword}
                 />
               </FormControl>
+              {
+                register ? (
+                  <FormControl mt={4}>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <Input
+                      placeholder="********"
+                      type={'password'}
+                      id="confirmpassword"
+                      ref={inputPassword}
+                    />
+                  </FormControl>
+                ) : (
+                  null
+                )
+              }
+              <FormControl mt={4}>
+                {
+                  !register ? (
+                    <FormLabel onClick={() => { setRegister(true) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
+                      Don't have an account?
+                    </FormLabel>
+                  ):(
+                      <FormLabel onClick={() => { setRegister(false) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
+                        Already Have an account? Login here
+                      </FormLabel>
+                  )
+                }
+              </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button
-                onClick={testCredentials}
-                form="formLogin"
-                colorScheme="blue"
-                mr={3}
-              >
-                Save
-              </Button>
+              {
+                !register ? (
+                  <Button
+                    onClick={testCredentials}
+                    form="formLogin"
+                    colorScheme="twitter"
+                    mr={3}
+                  >
+                    Login
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={registerUser}
+                    form="formLogin"
+                    colorScheme="twitter"
+                    mr={3}
+                  >
+                    Register
+                  </Button>
+                )
+              }
               <Button onClick={onLoginClose}>Cancel</Button>
             </ModalFooter>
           </ModalContent>
@@ -241,14 +319,14 @@ function App() {
           {connected ? (
             <>
               <Tooltip label="Logout" placement="bottom">
-                <Button onClick={disconnect} variant="ghost" colorScheme="blue">
+                <Button onClick={disconnect} variant="ghost" colorScheme="twitter">
                   Logout
                 </Button>
               </Tooltip>
             </>
           ) : (
             <Tooltip label="Login" placement="bottom">
-              <Button onClick={onLoginOpen} variant="ghost" colorScheme="blue">
+              <Button onClick={onLoginOpen} variant="ghost" colorScheme="twitter">
                 Login
               </Button>
             </Tooltip>
