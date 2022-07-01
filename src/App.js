@@ -74,6 +74,7 @@ function App() {
     if (!title && !content) {
       return;
     }
+
     //Saving the note in the database
     NoteDataService.createNote(user, title, content);
 
@@ -81,6 +82,7 @@ function App() {
       title: title,
       content: content,
     };
+
     notes.push(newNote);
     setNotes(notes);
     localStorage.setItem('notes', JSON.stringify(notes));
@@ -93,7 +95,6 @@ function App() {
       'notes',
       JSON.stringify(notes.filter(n => n !== note))
     );
-    console.log(note);
     //Delete the note in the database
     NoteDataService.deleteNote(note.id);
   }
@@ -118,6 +119,14 @@ function App() {
       .catch(error => {
         console.log(error);
       });
+  }
+
+  function disconnect() {
+    setConnected(false);
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('connected');
+    setNotes([]);
   }
 
   const {
@@ -230,15 +239,7 @@ function App() {
           {connected ? (
             <>
               <Tooltip label="Logout" placement="bottom">
-                <Button
-                  onClick={() => {
-                    setConnected(false);
-                    localStorage.removeItem('connection');
-                    localStorage.removeItem('user');
-                  }}
-                  variant="ghost"
-                  colorScheme="blue"
-                >
+                <Button onClick={disconnect} variant="ghost" colorScheme="blue">
                   Logout
                 </Button>
               </Tooltip>

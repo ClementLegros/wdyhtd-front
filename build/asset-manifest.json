@@ -4,7 +4,5 @@
     "index.html": "/WhatDoYouHaveToDo/index.html",
     "main.b35de2b1.js.map": "/WhatDoYouHaveToDo/static/js/main.b35de2b1.js.map"
   },
-  "entrypoints": [
-    "static/js/main.b35de2b1.js"
-  ]
+  "entrypoints": ["static/js/main.b35de2b1.js"]
 }
