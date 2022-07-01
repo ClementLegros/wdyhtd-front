@@ -51,7 +51,6 @@ function App() {
       });
   }, [user]);
 
-
   React.useEffect(() => {
     //Check if there are a connection in the localstorage
     if (localStorage.getItem('connected')) {
@@ -70,7 +69,6 @@ function App() {
     }
   }, [connected, getNote]);
 
-
   function addNote() {
     //get title and content from ref
     const title = inputTitle.current.value;
@@ -79,8 +77,6 @@ function App() {
     if (!title && !content) {
       return;
     }
-
-
 
     //Saving the note in the database
     NoteDataService.createNote(user, title, content);
@@ -127,8 +123,6 @@ function App() {
         console.log(error);
         //Throw an error if the user is not found
         setLoginError(true);
-
-
       });
   }
 
@@ -147,9 +141,9 @@ function App() {
     }
     UsersDataService.registerUser(username, password)
       .then(response => {
-          setConnected(true);
-          setUser(response.data.user);
-          onLoginClose();
+        setConnected(true);
+        setUser(response.data.user);
+        onLoginClose();
       })
       .catch(error => {
         console.log(error);
@@ -165,8 +159,8 @@ function App() {
   }
 
   /*
-  * Modal for Note
-  */
+   * Modal for Note
+   */
   const {
     isOpen: isNoteOpen,
     onOpen: onNoteOpen,
@@ -174,8 +168,8 @@ function App() {
   } = useDisclosure();
 
   /*
-  * Modal for login
-  */
+   * Modal for login
+   */
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
@@ -183,8 +177,8 @@ function App() {
   } = useDisclosure();
 
   /*
-  * Ref for Modal
-  */
+   * Ref for Modal
+   */
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
 
@@ -243,13 +237,11 @@ function App() {
           <ModalOverlay />
 
           <ModalContent>
-            {
-              !register ? (
-                <ModalHeader>Login</ModalHeader>
-              ) : (
-                <ModalHeader>Register</ModalHeader>
-              )
-            }
+            {!register ? (
+              <ModalHeader>Login</ModalHeader>
+            ) : (
+              <ModalHeader>Register</ModalHeader>
+            )}
             <ModalCloseButton />
             <ModalBody pb={6}>
               <FormControl>
@@ -269,63 +261,70 @@ function App() {
                   ref={inputPassword}
                 />
               </FormControl>
-              {
-                register ? (
-                  <FormControl mt={4}>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <Input
-                      placeholder="********"
-                      type={'password'}
-                      id="confirmpassword"
-                      ref={inputPassword}
-                    />
-                  </FormControl>
-                ) : (
-                  null
-                )
-              }
-              {
-                loginError ? (
-                  <Text fontSize="sm" color="red.500">
-                    The username or password is incorrect
-                  </Text>):(null)
-              }
+              {register ? (
+                <FormControl mt={4}>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <Input
+                    placeholder="********"
+                    type={'password'}
+                    id="confirmpassword"
+                    ref={inputPassword}
+                  />
+                </FormControl>
+              ) : null}
+              {loginError ? (
+                <Text fontSize="sm" color="red.500">
+                  The username or password is incorrect
+                </Text>
+              ) : null}
               <FormControl mt={4}>
-                {
-                  !register ? (
-                    <FormLabel onClick={() => { setRegister(true) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
-                      Don't have an account?
-                    </FormLabel>
-                  ) : (
-                    <FormLabel onClick={() => { setRegister(false) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
-                      Already Have an account? Login here
-                    </FormLabel>
-                  )
-                }
+                {!register ? (
+                  <FormLabel
+                    onClick={() => {
+                      setRegister(true);
+                    }}
+                    cursor={'pointer'}
+                    color={'twitter.500'}
+                    colorScheme={'twitter'}
+                    _hover={{ textDecoration: 'underline' }}
+                  >
+                    Don't have an account?
+                  </FormLabel>
+                ) : (
+                  <FormLabel
+                    onClick={() => {
+                      setRegister(false);
+                    }}
+                    cursor={'pointer'}
+                    color={'twitter.500'}
+                    colorScheme={'twitter'}
+                    _hover={{ textDecoration: 'underline' }}
+                  >
+                    Already Have an account? Login here
+                  </FormLabel>
+                )}
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              {
-                !register ? (
-                  <Button
-                    onClick={testCredentials}
-                    form="formLogin"
-                    colorScheme="twitter"
-                    mr={3}
-                  >
-                    Login
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={registerUser}
-                    form="formLogin"
-                    colorScheme="twitter"
-                    mr={3}
-                  >
-                    Register
-                  </Button>
-                )
-              }
+              {!register ? (
+                <Button
+                  onClick={testCredentials}
+                  form="formLogin"
+                  colorScheme="twitter"
+                  mr={3}
+                >
+                  Login
+                </Button>
+              ) : (
+                <Button
+                  onClick={registerUser}
+                  form="formLogin"
+                  colorScheme="twitter"
+                  mr={3}
+                >
+                  Register
+                </Button>
+              )}
               <Button onClick={onLoginClose}>Cancel</Button>
             </ModalFooter>
           </ModalContent>
@@ -337,14 +336,22 @@ function App() {
           {connected ? (
             <>
               <Tooltip label="Logout" placement="bottom">
-                <Button onClick={disconnect} variant="ghost" colorScheme="twitter">
+                <Button
+                  onClick={disconnect}
+                  variant="ghost"
+                  colorScheme="twitter"
+                >
                   Logout
                 </Button>
               </Tooltip>
             </>
           ) : (
             <Tooltip label="Login" placement="bottom">
-              <Button onClick={onLoginOpen} variant="ghost" colorScheme="twitter">
+              <Button
+                onClick={onLoginOpen}
+                variant="ghost"
+                colorScheme="twitter"
+              >
                 Login
               </Button>
             </Tooltip>
@@ -384,7 +391,7 @@ function App() {
                   position={'absolute'}
                   top={0}
                   right={0}
-                  size='sm'
+                  size="sm"
                   onClick={() => removeNote(note)}
                 />
                 <Heading marginBottom={1} marginTop={'2'} fontSize={'lg'}>
