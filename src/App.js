@@ -24,6 +24,7 @@ import {
   FormLabel,
   Textarea,
   Tooltip,
+  CloseButton,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 
@@ -32,6 +33,7 @@ function App() {
   const [connected, setConnected] = React.useState(false);
   const [user, setUser] = React.useState(null);
   const [register, setRegister] = React.useState(false);
+  const [loginError, setLoginError] = React.useState(false);
 
   //we need to create ref for the input
   const inputTitle = React.createRef();
@@ -52,7 +54,7 @@ function App() {
 
   React.useEffect(() => {
     //Check if there are a connection in the localstorage
-    if (localStorage.getItem('connection')) {
+    if (localStorage.getItem('connected')) {
       setConnected(true);
 
       //retrieve the user from the localstorage
@@ -68,7 +70,7 @@ function App() {
     }
   }, [connected, getNote]);
 
-  
+
   function addNote() {
     //get title and content from ref
     const title = inputTitle.current.value;
@@ -78,7 +80,7 @@ function App() {
       return;
     }
 
-    
+
 
     //Saving the note in the database
     NoteDataService.createNote(user, title, content);
@@ -123,6 +125,10 @@ function App() {
       })
       .catch(error => {
         console.log(error);
+        //Throw an error if the user is not found
+        setLoginError(true);
+
+
       });
   }
 
@@ -131,17 +137,23 @@ function App() {
     const password = inputPassword.current.value;
     const confirmpassword = inputPassword.current.value;
 
-    //check if there are empty fields
     if (!username || !password || !confirmpassword) {
       alert('Please fill all the fields');
       return;
     }
-
     if (password !== confirmpassword) {
       alert('Password does not match');
       return;
     }
     UsersDataService.registerUser(username, password)
+      .then(response => {
+          setConnected(true);
+          setUser(response.data.user);
+          onLoginClose();
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   function disconnect() {
@@ -229,7 +241,7 @@ function App() {
           onClose={onLoginClose}
         >
           <ModalOverlay />
-          
+
           <ModalContent>
             {
               !register ? (
@@ -272,16 +284,22 @@ function App() {
                   null
                 )
               }
+              {
+                loginError ? (
+                  <Text fontSize="sm" color="red.500">
+                    The username or password is incorrect
+                  </Text>):(null)
+              }
               <FormControl mt={4}>
                 {
                   !register ? (
                     <FormLabel onClick={() => { setRegister(true) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
                       Don't have an account?
                     </FormLabel>
-                  ):(
-                      <FormLabel onClick={() => { setRegister(false) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
-                        Already Have an account? Login here
-                      </FormLabel>
+                  ) : (
+                    <FormLabel onClick={() => { setRegister(false) }} cursor={"pointer"} color={"twitter.500"} colorScheme={"twitter"} _hover={{ textDecoration: "underline" }}>
+                      Already Have an account? Login here
+                    </FormLabel>
                   )
                 }
               </FormControl>
@@ -346,7 +364,6 @@ function App() {
               'repeat(1, 1fr)',
               'repeat(2, 1fr)',
               'repeat(3, 1fr)',
-              'repeat(4, 1fr)',
             ]}
             gap={2}
           >
@@ -356,25 +373,20 @@ function App() {
                 p={3}
                 marginTop={'5'}
                 marginBottom={'5'}
-                borderColor="blackAlpha.100"
                 borderRadius={'lg'}
                 bg="whiteAlpha.200"
                 shadow={'xl'}
                 height={'auto'}
-                width={'56'}
+                width={'80'}
                 key={index}
               >
-                <Button
-                  width={1}
-                  height={5}
+                <CloseButton
                   position={'absolute'}
                   top={0}
                   right={0}
+                  size='sm'
                   onClick={() => removeNote(note)}
-                  colorScheme={'red'}
-                >
-                  X
-                </Button>
+                />
                 <Heading marginBottom={1} marginTop={'2'} fontSize={'lg'}>
                   {note.title}
                 </Heading>
