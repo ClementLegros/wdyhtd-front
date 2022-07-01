@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import UsersDataService from './Services/Users.service';
 import NoteDataService from './Services/Note.service';
 import {
@@ -38,6 +38,17 @@ function App() {
   const inputUsername = React.createRef();
   const inputPassword = React.createRef();
 
+  const getNote = useCallback(() => {
+    NoteDataService.getNoteFromUser(user)
+      .then(response => {
+        setNotes(response.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, [user]);
+
+
   React.useEffect(() => {
     //Check if there are a connection in the localstorage
     if (localStorage.getItem('connection')) {
@@ -48,24 +59,15 @@ function App() {
       getNote();
       //Get all the note from the user
     }
-  }, []);
+  }, [getNote]);
 
   React.useEffect(() => {
     if (connected) {
       getNote();
     }
-  }, [connected]);
+  }, [connected, getNote]);
 
-  function getNote() {
-    NoteDataService.getNoteFromUser(user)
-      .then(response => {
-        setNotes(response.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
+  
   function addNote() {
     //get title and content from ref
     const title = inputTitle.current.value;
@@ -99,7 +101,7 @@ function App() {
     NoteDataService.deleteNote(note.id);
   }
 
-  function _testCredentials() {
+  function testCredentials() {
     const username = inputUsername.current.value;
     const password = inputPassword.current.value;
 
@@ -221,7 +223,7 @@ function App() {
             </ModalBody>
             <ModalFooter>
               <Button
-                onClick={_testCredentials}
+                onClick={testCredentials}
                 form="formLogin"
                 colorScheme="blue"
                 mr={3}
